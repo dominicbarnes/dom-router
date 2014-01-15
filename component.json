@@ -1,0 +1,11 @@
+{
+  "name": "dom-router",
+  "description": "Execute client-side scripts based on DOM attributes",
+  "version": "0.0.1",
+  "dependencies": {
+    "component/each": "*"
+  },
+  "scripts": [
+    "index.js"
+  ]
+}
