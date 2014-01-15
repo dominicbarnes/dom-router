@@ -1,26 +1,62 @@
 // dependencies
+var debug = require("debug")("dom-router");
 var each = require("each");
 
 // single export
-module.exports = function (element, options) {
+module.exports = function (options) {
     options = options || {};
-    var el = element || document.body;
-    
-    var page = el[options.pageAttr || "id"];
-    var behaviors = el[options.behaviorAttr || "className"];
-    
+
+    debug("configured options:", options);
+
+    var el = options.element || document.body;
+    var page = el.getAttribute(options.pageAttr || "id");
+    debug("page script id parsed as:", page);
+    var behaviors = el.getAttribute(options.behaviorAttr || "class");
+    debug("behavior script ids parsed as:", behaviors);
+
+    processBehaviors(behaviors, options);
+    processPage(page, options);
+};
+
+function processBehaviors(behaviors, options) {
     var ctx = options.context || null;
     var args = options.args || [];
-    
-    each(behaviors.split(" "), function (id) {
-        if (id in options.behaviors) {
-            options.behaviors[id].apply(ctx, args);
-        } else {
-            console.error("behavior script", id, "not found");
-        }
-    });
-    
-    if (page && page in options.pages) {
-        options.pages[page].apply(ctx, args);
+    var registry = options.behaviors;
+
+    if (!registry) {
+        debug("behavior registry empty");
+    } else if (!behaviors) {
+        debug("no behaviors configured to run on this page");
+    } else {
+        each(behaviors.split(/\s+/), function (id) {
+            if (id in registry) {
+                if (typeof args === "function") {
+                    var fnArgs = args("behavior", id);
+                }
+
+                debug("executing behavior script:", id);
+                options.behaviors[id].apply(ctx, fnArgs || args);
+            } else {
+                debug("behavior script not available in registry:", id);
+            }
+        });
     }
-};
+}
+
+function processPage(page, options) {
+    var ctx = options.context || null;
+    var args = options.args || [];
+    var registry = options.pages;
+
+    if (!registry) {
+        debug("page registry empty");
+    } else if (!page) {
+        debug("no page script configured to run on this page");
+    } else if (page in registry) {
+        if (typeof args === "function") args = args("page", page);
+        debug("executing page script:", page);
+        registry[page].apply(ctx, args);
+    } else {
+        debug("page script not available in registry:", page);
+    }
+}

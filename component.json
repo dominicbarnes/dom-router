@@ -3,7 +3,12 @@
   "description": "Execute client-side scripts based on DOM attributes",
   "version": "0.0.1",
   "dependencies": {
-    "component/each": "*"
+    "component/each": "*",
+    "visionmedia/debug": "*"
+  },
+  "development": {
+    "visionmedia/mocha": "*",
+    "dominicbarnes/expect.js": "*"
   },
   "scripts": [
     "index.js"
