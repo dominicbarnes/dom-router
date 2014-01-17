@@ -22,13 +22,13 @@ function processBehaviors(behaviors, options) {
     var ctx = options.context || null;
     var args = options.args || [];
     var registry = options.behaviors;
+    var ids = !!behaviors ? behaviors.split(/\s+/) : [];
+    ids.unshift("common");
 
     if (!registry) {
-        debug("behavior registry empty");
-    } else if (!behaviors) {
-        debug("no behaviors configured to run on this page");
+        debug("no behavior registry");
     } else {
-        each(behaviors.split(/\s+/), function (id) {
+        each(ids, function (id) {
             if (id in registry) {
                 if (typeof args === "function") {
                     var fnArgs = args("behavior", id);
@@ -49,7 +49,7 @@ function processPage(page, options) {
     var registry = options.pages;
 
     if (!registry) {
-        debug("page registry empty");
+        debug("no page registry");
     } else if (!page) {
         debug("no page script configured to run on this page");
     } else if (page in registry) {

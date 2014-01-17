@@ -159,4 +159,12 @@ describe("DomRouter()", function () {
             }
         });
     });
+
+    it("should always execute the 'common' behavior", function (done) {
+        router({
+            behaviors: {
+                common: done
+            }
+        });
+    });
 });
